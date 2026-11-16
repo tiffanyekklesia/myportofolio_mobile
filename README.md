@@ -1,7 +1,7 @@
 # MyPortfolio Mobile
 
 A Flutter portfolio dashboard with profile information cards, navigation, and a
-portfolio form for adding education details.
+portfolio form for adding education and project details.
 
 ## Run in Chrome
 
@@ -14,25 +14,37 @@ flutter run -d chrome
 
 ```powershell
 flutter analyze
-flutter test
+flutter test --no-test-assets
 ```
 
 To run on Android, install Android Studio and the Android SDK, then complete
 the setup steps reported by `flutter doctor`.
 
+## Tutorial 9
+
+The app demonstrates route navigation with the home action cards and reusable
+drawer, plus a project form with required-field validation, a category dropdown,
+optional technology and URL fields, a summary dialog, and form reset after
+confirmation. The form scrolls on small screens and while the keyboard is open.
+
+Run `flutter test --no-test-assets` to check project form validation,
+submission, drawer navigation, and the existing education form behavior. The
+current widget tests do not depend on bundled test assets.
+
 ## AI Disclosure
 
 I used GitHub Copilot in VS Code to review the supplied Assignment 8 checklist,
 inspect the existing Flutter app, and help organize the home screen, reusable
-action card, and education form navigation. AI assistance also helped prepare
-widget tests and refine these answers. I provided the assignment requirements
-as the main prompt and asked for changes to stay within that scope. I reviewed
-the proposed changes and ran `flutter analyze` and `flutter test`; these checks
-do not replace manually trying the app in Chrome or on a phone.
+action card, education form navigation, and Tutorial 9 project form. AI
+assistance also helped prepare widget tests and refine these answers. I provided
+the assignment requirements as the main prompt and asked for changes to stay
+within that scope. I reviewed the proposed changes and ran `flutter analyze` and
+`flutter test --no-test-assets`; these checks do not replace manually trying
+the app in Chrome or on a phone.
 
-AI output can miss runtime, device-size, and course-prerequisite issues. In
-particular, I must still manually check the app flows and ensure Tutorial 09
-is completed before its prerequisite deadline.
+AI output can miss runtime and device-size issues. Passing automated checks
+does not replace manually trying the app in Chrome or on a phone, or completing
+the course's Tutorial 09 submission requirements.
 
 ### AI Prompting History
 
@@ -40,6 +52,8 @@ is completed before its prerequisite deadline.
   prepare the implementation for review without committing or pushing.
 - Asked Copilot to verify navigation, form validation, summary-dialog behavior,
   responsive scrolling, documentation, and tests.
+- Asked Copilot to complete Tutorial 9's Add Project form and navigation without
+  committing or pushing.
 
 ### Assignment 8
 

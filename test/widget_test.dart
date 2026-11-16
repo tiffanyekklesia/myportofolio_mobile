@@ -119,6 +119,12 @@ void main() {
 
     await tester.tap(find.byTooltip('Open navigation menu'));
     await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(ListTile, 'Add Project'));
+    await tester.pumpAndSettle();
+    expect(find.text('Project Details'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Open navigation menu'));
+    await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(ListTile, 'Add Education'));
     await tester.pumpAndSettle();
     expect(find.text('Education Details'), findsOneWidget);
@@ -126,6 +132,91 @@ void main() {
     await tester.tap(find.byTooltip('Open navigation menu'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(ListTile, 'Home'));
+    await tester.pumpAndSettle();
+    expect(find.text('Welcome to MyPortfolio Mobile!'), findsOneWidget);
+  });
+
+  testWidgets('Add Project form validates, summarizes, and resets', (
+    WidgetTester tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(320, 640);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(const MyApp());
+    await tester.tap(find.text('Add Project'));
+    await tester.pumpAndSettle();
+    expect(find.text('Project Details'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Save'));
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(find.text('Enter a project name.'), findsOneWidget);
+    expect(find.text('Enter a project description.'), findsOneWidget);
+
+    await _enterText(tester, 'project-name-field', '   ');
+    await _enterText(tester, 'project-description-field', 'A portfolio app');
+    tester.testTextInput.hide();
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Save'));
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(find.text('Enter a project name.'), findsOneWidget);
+
+    await _enterText(tester, 'project-name-field', 'My Portfolio App');
+    await tester.tap(find.byKey(const Key('project-category-field')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Mobile Development').last);
+    await tester.pumpAndSettle();
+    await _enterText(tester, 'project-technologies-field', 'Flutter, Dart');
+    await _enterText(tester, 'project-link-field', 'not-a-url');
+    tester.testTextInput.hide();
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Save'));
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(find.text('Enter a valid http or https URL.'), findsOneWidget);
+
+    await _enterText(
+      tester,
+      'project-link-field',
+      'https://example.com/portfolio',
+    );
+    tester.testTextInput.hide();
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Save'));
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Project added successfully!'), findsOneWidget);
+    expect(find.text('Project Name: My Portfolio App'), findsOneWidget);
+    expect(find.text('Description: A portfolio app'), findsOneWidget);
+    expect(find.text('Category: Mobile Development'), findsOneWidget);
+    expect(find.text('Technologies: Flutter, Dart'), findsOneWidget);
+    expect(find.text('Link: https://example.com/portfolio'), findsOneWidget);
+
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect(find.text('Project Details'), findsOneWidget);
+    expect(
+      tester
+          .widget<TextFormField>(find.byKey(const Key('project-name-field')))
+          .controller!
+          .text,
+      isEmpty,
+    );
+    expect(
+      tester
+          .widget<TextFormField>(
+            find.byKey(const Key('project-description-field')),
+          )
+          .controller!
+          .text,
+      isEmpty,
+    );
+
+    await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     expect(find.text('Welcome to MyPortfolio Mobile!'), findsOneWidget);
   });

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myportofolio_mobile/screens/home_page.dart';
 import 'package:myportofolio_mobile/screens/education_form_page.dart';
+import 'package:myportofolio_mobile/screens/project_form_page.dart';
 
 class PortfolioDrawer extends StatelessWidget {
   const PortfolioDrawer({super.key, required this.currentPage});
@@ -37,6 +38,11 @@ class PortfolioDrawer extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                SizedBox(height: 4),
+                Text(
+                  'Explore projects & experiences',
+                  style: TextStyle(color: Colors.white, fontSize: 12),
+                ),
               ],
             ),
           ),
@@ -61,15 +67,12 @@ class PortfolioDrawer extends StatelessWidget {
                 }
 
                 if (item.route == 'add_project') {
-                  ScaffoldMessenger.of(context)
-                    ..hideCurrentSnackBar()
-                    ..showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Add Project page is not yet implemented.',
-                        ),
-                      ),
-                    );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ProjectFormPage(),
+                    ),
+                  );
                   return;
                 }
 
