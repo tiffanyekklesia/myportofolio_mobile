@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myportofolio_mobile/menu.dart';
+import 'package:myportofolio_mobile/screens/home_page.dart';
 
 void main() {
   runApp(const MyApp());

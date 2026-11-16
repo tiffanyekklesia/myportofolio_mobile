@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:myportofolio_mobile/screens/education_form_page.dart';
+import 'package:myportofolio_mobile/widgets/portfolio_action_card.dart';
+import 'package:myportofolio_mobile/widgets/portfolio_drawer.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -10,6 +13,7 @@ class MyHomePage extends StatelessWidget {
   static const List<ItemHomepage> items = [
     ItemHomepage('View Projects', Icons.folder),
     ItemHomepage('Add Project', Icons.add_circle),
+    ItemHomepage('Add Education', Icons.school),
     ItemHomepage('Logout', Icons.logout),
   ];
 
@@ -29,7 +33,9 @@ class MyHomePage extends StatelessWidget {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
+      drawer: const PortfolioDrawer(currentPage: 'home'),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -48,6 +54,20 @@ class MyHomePage extends StatelessWidget {
                   child: InfoCard(title: 'Class', content: kelas),
                 ),
               ],
+            ),
+            const SizedBox(height: 16),
+            PortfolioActionCard(
+              key: const Key('add-education-action'),
+              title: 'Add Education',
+              icon: Icons.school,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const EducationFormPage(),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 16),
             const Padding(
@@ -126,6 +146,27 @@ class ItemCard extends StatelessWidget {
       child: InkWell(
         borderRadius: borderRadius,
         onTap: () {
+          if (item.name == 'Add Education') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const EducationFormPage(),
+              ),
+            );
+            return;
+          }
+
+          if (item.name == 'Add Project') {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                const SnackBar(
+                  content: Text('Add Project page is not yet implemented.'),
+                ),
+              );
+            return;
+          }
+
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
