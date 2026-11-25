@@ -1,63 +1,88 @@
 # MyPortfolio Mobile
 
-A Flutter portfolio dashboard with profile information cards, navigation, and a
-portfolio form for adding education and project details.
+A Flutter portfolio app with education and project forms, public project
+listing, Django REST Framework integration, and token-based authentication.
 
-## Run in Chrome
+## Setup and run
 
 ```powershell
 flutter pub get
-flutter run -d chrome
+dart run build_runner build --delete-conflicting-outputs
+flutter run -d chrome --dart-define=API_BASE_URL=http://localhost:8000
 ```
 
-## Validate
+The default API URL is `http://10.0.2.2:8000`, which is reachable from an
+Android emulator. For a physical Android device, run:
 
 ```powershell
+adb reverse tcp:8000 tcp:8000
+flutter run --dart-define=API_BASE_URL=http://localhost:8000
+```
+
+Flutter Web requires the Django backend to allow the local web origin through
+CORS.
+
+## Validation
+
+```powershell
+dart format .
 flutter analyze
 flutter test --no-test-assets
 ```
 
+Generated `*.g.dart` files are ignored by Git and regenerated locally and in CI.
 To run on Android, install Android Studio and the Android SDK, then complete
 the setup steps reported by `flutter doctor`.
 
-## Tutorial 9
+## Tutorial 10 status and backend prerequisite
 
-The app demonstrates route navigation with the home action cards and reusable
-drawer, plus a project form with required-field validation, a category dropdown,
-optional technology and URL fields, a summary dialog, and form reset after
-confirmation. The form scrolls on small screens and while the keyboard is open.
+The Flutter client implements the Tutorial 10 API, project model, public project
+list/detail, token login/logout, guarded project creation, and GitHub Actions
+CI/APK artifact workflow. The Django project from Tutorial 07 was not included
+in this repository, so the backend portion of Tutorial 10 is **not yet applied
+or verified**. Before end-to-end testing, apply the backend steps in the
+separate Django repository:
 
-Run `flutter test --no-test-assets` to check project form validation,
-submission, drawer navigation, and the existing education form behavior. The
-current widget tests do not depend on bundled test assets.
+- Install `django-cors-headers`; add `corsheaders` and
+  `rest_framework.authtoken` to `INSTALLED_APPS`.
+- Put `CorsMiddleware` before `CommonMiddleware`, enable
+  `TokenAuthentication` before `SessionAuthentication`, add `10.0.2.2` to
+  `ALLOWED_HOSTS`, and configure local CORS origins.
+- Add `POST /api/v1/auth/token/` and authenticated
+  `POST /api/v1/auth/logout/`; migrate the database.
+- Keep the Tutorial 07 project endpoints and serializer fields compatible with
+  `title`, `description`, `tech_stack`, `project_url`, and optional
+  `project_image_url`.
 
-## AI Disclosure
+Set the repository Actions variable `API_BASE_URL` to the deployed Django API
+root URL (without a trailing slash) to build the APK against deployment. It is
+not a secret. Do not store passwords or private tokens in Actions variables.
 
-I used GitHub Copilot in VS Code to review the supplied Assignment 8 checklist,
-inspect the existing Flutter app, and help organize the home screen, reusable
-action card, education form navigation, and Tutorial 9 project form. AI
-assistance also helped prepare widget tests and refine these answers. I provided
-the assignment requirements as the main prompt and asked for changes to stay
-within that scope. I reviewed the proposed changes and ran `flutter analyze` and
-`flutter test --no-test-assets`; these checks do not replace manually trying
-the app in Chrome or on a phone.
+## AI disclosure
 
-AI output can miss runtime and device-size issues. Passing automated checks
-does not replace manually trying the app in Chrome or on a phone, or completing
-the course's Tutorial 09 submission requirements.
+GitHub Copilot in VS Code assisted with interpreting the supplied Tutorial 10
+PDF, implementing the Flutter-side API client, model, authentication flow,
+project list/detail, CI workflow, tests, and documentation. The prompts
+specified the tutorial requirements and requested implementation without
+committing or pushing. I reviewed the generated changes against the PDF and
+repository structure. The Django backend was not generated because its
+Tutorial 07 project is absent; the Flutter client therefore still needs testing
+against that backend. AI-generated code can miss runtime, network, CORS, or
+environment-specific issues, so local checks and end-to-end testing remain
+necessary.
 
-### AI Prompting History
+### AI prompting history
 
-- Asked Copilot to assess the project against the Assignment 8 checklist and
-  prepare the implementation for review without committing or pushing.
-- Asked Copilot to verify navigation, form validation, summary-dialog behavior,
-  responsive scrolling, documentation, and tests.
-- Asked Copilot to complete Tutorial 9's Add Project form and navigation without
-  committing or pushing.
+- Asked Copilot to read all of Tutorial 10 and apply its requirements without
+  committing.
+- Clarified that the Django backend repository and deployed API URL were not
+  available; proceeded with the Flutter client and CI implementation.
+- Earlier prompts covered Assignment 8 navigation, forms, validation,
+  documentation, and tests.
 
 ### Assignment 8
 
-1. `Navigator.push()` menambahkan halaman baru di atas halaman saat ini, `Navigator.pushReplacement()` mengganti halaman saat ini, sedangkan `Navigator.pop()` menutup halaman teratas dan kembali ke halaman sebelumnya. Kartu aksi Add Education menggunakan `Navigator.push()` agar formulir terbuka tanpa menghapus Home dari tumpukan navigasi. Opsi Home di drawer menutup drawer dengan `Navigator.pop()`, lalu menggunakan `Navigator.pushReplacement()` untuk kembali ke halaman Home.
-2. `Scaffold` menyediakan struktur utama halaman, `AppBar` menjaga tampilan bagian atas tetap konsisten, dan `Drawer` menyediakan navigasi yang sama di setiap halaman. Contohnya, warna primer tema digunakan pada `AppBar` dan header `Drawer`, baik di halaman Home maupun formulir Education.
-3. Tata letak ini dipilih agar formulir tetap mudah dibaca dan digunakan di layar kecil. `SingleChildScrollView` memungkinkan pengguna menggulir formulir ketika ruang vertikal terbatas atau papan ketik terbuka. `Padding` dan `SizedBox` memberi jarak antarbagian agar kolom mudah dibaca dan disentuh.
-4. `GlobalKey<FormState>` menyediakan akses ke status formulir, setiap `validator` memeriksa aturan suatu kolom, dan `validate()` menjalankan semua validator saat tombol Save ditekan. Contohnya, nama institusi kosong atau hanya berisi spasi ditolak karena kolom tersebut wajib diisi. Memilih `TextFormField` atau tipe papan ketik saja tidak cukup karena keduanya tidak menegakkan aturan seperti nilai wajib, batas panjang, atau urutan tanggal.
+1. `Navigator.push()` adds a route on top of the current screen, `Navigator.pushReplacement()` replaces the current route, and `Navigator.pop()` removes the current route and returns to the previous one. The Add Education action card uses `Navigator.push()` to open the form while preserving Home underneath. The Home drawer option closes the drawer with `Navigator.pop()` and then uses `Navigator.pushReplacement()` to show Home instead of the form.
+2. The `Scaffold` provides the app shell, the `AppBar` keeps the same top bar styling across pages, and the `Drawer` gives a consistent navigation menu on every screen. The same primary color is used for the AppBar and Drawer header on the home screen and education form, so the portfolio theme remains visually consistent.
+3. This layout was chosen so the form stays readable and usable on smaller screens. The `SingleChildScrollView` allows the form to scroll when the keyboard is open or when there is limited vertical space, while the padding and spacing keep the fields separated and easy to tap and read.
+4. `GlobalKey<FormState>` gives access to the form state, `validator` checks each field before submission, and `validate()` runs the validators when Save is pressed. For example, an empty institution value is rejected because it is required, and a value containing only spaces is not accepted. Simply choosing a `TextFormField` or a keyboard type is not enough because validation logic is still needed to enforce business rules and required data.
